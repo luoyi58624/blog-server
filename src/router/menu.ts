@@ -1,49 +1,27 @@
 import express from 'express'
-import Role from '../schema/role'
+import Menu from '../schema/menu'
 import { tokenAuth } from '../middle/auth'
 import { parseDate } from '../utils/commons'
 
 const router = express.Router()
 
 router.get('/', tokenAuth, async (req, res) => {
-	const { _id, p, size } = req.query
-	let datas
-	if (_id) {
-		datas = await Role.find({ _id: req.query._id })
-	} else {
-		datas = await Role.find()
-			.skip((Number(p) - 1) * Number(size))
-			.limit(Number(size))
-	}
 	res.send({
 		code: 200,
 		msg: '查询成功',
-		data: {
-			datas,
-			count: await Role.countDocuments()
-		}
+		data: await Menu.find()
 	})
 })
 
 router.post('/', tokenAuth, async (req, res, next) => {
 	try {
-		const date = await Role.findOne({
-			roleName: req.body.roleName
+		const newData = new Menu(req.body)
+		await newData.save()
+		res.send({
+			code: 200,
+			msg: '新增成功',
+			data: newData
 		})
-		if (date) {
-			res.send({
-				code: 500,
-				msg: '角色名已存在'
-			})
-		} else {
-			const newData = new Role(req.body)
-			await newData.save()
-			res.send({
-				code: 200,
-				msg: '新增成功',
-				data: newData
-			})
-		}
 	} catch (e) {
 		next(e)
 	}
@@ -52,7 +30,7 @@ router.post('/', tokenAuth, async (req, res, next) => {
 router.put('/', tokenAuth, async (req, res, next) => {
 	try {
 		req.body.updateDate = parseDate(new Date())
-		await Role.updateOne(
+		await Menu.updateOne(
 			{
 				_id: req.body._id
 			},
@@ -76,7 +54,7 @@ router.delete('/', tokenAuth, async (req, res) => {
 	} else {
 		const ids = (<string>req.query.ids).split(',')
 		for (let i = 0; i < ids.length; i++) {
-			await Role.deleteOne({ _id: ids[i] })
+			await Menu.deleteOne({ _id: ids[i] })
 		}
 		res.send({
 			code: 200,
