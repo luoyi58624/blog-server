@@ -23,6 +23,18 @@ const MenuSchema = new Schema({
     type: String,
     default: ''
   },
+  menuType:{
+    type: Number, // 1->目录 2->路由
+    default: 1
+  },
+  enabledCache: {
+    type: Boolean,
+    default: true
+  },
+  visiable: {
+    type: Boolean,
+    default: true
+  },
   enabled: {
     type: Boolean,
     default: true

@@ -20,11 +20,15 @@ const UserSchema = new Schema({
 	},
 	sex: {
 		type: Boolean,
-		default: true   // true为男，false为女
+		default: true // true为男，false为女
 	},
 	avatarUrl: {
 		type: String,
 		default: null
+	},
+	menus: {
+		type: Array,
+		default: []
 	},
 	createDate: {
 		type: String,

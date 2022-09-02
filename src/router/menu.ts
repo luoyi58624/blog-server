@@ -6,10 +6,19 @@ import { parseDate } from '../utils/commons'
 const router = express.Router()
 
 router.get('/', tokenAuth, async (req, res) => {
+	const { _id, ids } = req.query
+	let datas
+	if (ids && Array.isArray(ids)) {
+		datas = await Menu.find({ _id: { $in: ids } })
+	} else if (_id) {
+		datas = await Menu.find({ _id: req.query._id })
+	} else {
+		datas = await Menu.find()
+	}
 	res.send({
 		code: 200,
 		msg: '查询成功',
-		data: await Menu.find()
+		data: datas
 	})
 })
 
@@ -62,4 +71,5 @@ router.delete('/', tokenAuth, async (req, res) => {
 		})
 	}
 })
+
 export default router

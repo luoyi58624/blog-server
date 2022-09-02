@@ -3,7 +3,8 @@ import User from '../schema/user'
 import redisClient from '../plugins/redis'
 import { tokenAuth } from '../middle/auth'
 import { parseDate } from '../utils/commons'
-import { encrypt } from "../utils/encrypt";
+import { encrypt } from '../utils/encrypt'
+import Menu from '../schema/menu'
 
 const router = express.Router()
 
@@ -66,7 +67,7 @@ router.put('/', tokenAuth, async (req, res, next) => {
 				delete req.body.password
 			}
 			req.body.updateDate = parseDate(new Date())
-			await User.updateOne({_id: req.body._id}, req.body)
+			await User.updateOne({ _id: req.body._id }, req.body)
 			res.send({
 				code: 200,
 				msg: '用户更新成功'
@@ -129,6 +130,27 @@ router.get('/logout', tokenAuth, async (req, res, next) => {
 		res.send({
 			code: 200,
 			msg: '退出成功'
+		})
+	} catch (e) {
+		next(e)
+	}
+})
+
+router.put('/allotMenu', tokenAuth, async (req, res, next) => {
+	try {
+		req.body.updateDate = parseDate(new Date())
+		const userData = await User.findOne({ _id: req.body._id }).lean()
+		if (!userData)
+			return res.send({
+				code: 500,
+				msg: '没有此用户'
+			})
+
+		req.body.menus = Array.from(new Set((userData.menus || []).concat(req.body.menus)))
+		await User.updateOne({ _id: req.body._id }, req.body)
+		res.send({
+			code: 200,
+			msg: '分配成功'
 		})
 	} catch (e) {
 		next(e)

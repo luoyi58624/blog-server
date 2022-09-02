@@ -12,6 +12,7 @@ router.get('/', (req, res) => {
 	})
 })
 
+
 router.use('/user', userRouter)
 router.use('/role', roleRouter)
 router.use('/menu', menuRouter)
